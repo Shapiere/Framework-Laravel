@@ -3,38 +3,48 @@
 namespace Tests\Feature;
 
 use App\Models\Author;
+use App\Models\Book;
 use App\Models\Genre;
+use Database\Seeders\GenreSeeder;
+use Database\Seeders\AuthorSeeder;
+use Database\Seeders\BookSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    public function test_genre_berisi_lima_data_dan_tampil_di_view(): void
+    use RefreshDatabase;
+
+    protected function setUp(): void
     {
-        $genres = (new Genre())->getGenres();
+        parent::setUp();
 
-        $this->assertCount(5, $genres);
-        $this->assertSame(['id', 'name', 'description'], array_keys($genres[0]));
-
-        $response = $this->get('/genres');
-        $response->assertStatus(200);
-
-        foreach ($genres as $genre) {
-            $response->assertSee($genre['name']);
-        }
+        $this->seed([
+            GenreSeeder::class,
+            AuthorSeeder::class,
+            BookSeeder::class,
+        ]);
     }
 
-    public function test_author_berisi_lima_data_dan_tampil_di_view(): void
+    public function test_seeder_mengisi_lima_data_per_tabel(): void
     {
-        $authors = (new Author())->getAuthors();
+        $this->assertSame(5, Genre::count());
+        $this->assertSame(5, Author::count());
+        $this->assertSame(5, Book::count());
+    }
 
-        $this->assertCount(5, $authors);
-        $this->assertSame(['id', 'name', 'photo', 'bio'], array_keys($authors[0]));
+    public function test_relasi_book_ke_author_dan_genre(): void
+    {
+        $book = Book::with(['author', 'genre'])->first();
 
-        $response = $this->get('/authors');
-        $response->assertStatus(200);
+        $this->assertNotNull($book->author);
+        $this->assertNotNull($book->genre);
+    }
 
-        foreach ($authors as $author) {
-            $response->assertSee($author['name']);
-        }
+    public function test_halaman_genre_author_dan_book_menampilkan_data(): void
+    {
+        $this->get('/genres')->assertStatus(200)->assertSee('Novel');
+        $this->get('/authors')->assertStatus(200)->assertSee('Pramoedya Ananta Toer');
+        $this->get('/books')->assertStatus(200)->assertSee('Bumi Manusia');
     }
 }

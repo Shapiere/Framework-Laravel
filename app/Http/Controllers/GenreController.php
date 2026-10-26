@@ -8,9 +8,8 @@ class GenreController extends Controller
 {
     public function index()
     {
-        $data = new Genre(); // membuat object
-        $genres = $data->getGenres(); // mengakses method getGenres
+        $genres = Genre::all();
 
-        return view('genres', ['genres' => $genres]); // mengirim data genre ke view
+        return view('genres', ['genres' => $genres]);
     }
 }
