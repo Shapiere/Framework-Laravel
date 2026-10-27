@@ -1,6 +1,6 @@
-# Framework Laravel — MVC Genre, Author & Book
+# Framework Laravel — REST API Genre, Author & Book
 
-Tugas Framework Laravel: tabel `genres`, `authors`, dan `books` dibuat dengan Migration, diisi 5 data dummy lewat Seeder, lalu ditampilkan ke View melalui Model, Controller, dan Routing.
+Tugas Framework Laravel: data `genres`, `authors`, dan `books` dibuat lewat Migration, diisi 5 data dummy lewat Seeder, lalu disajikan sebagai **JSON API** (tanpa view).
 
 ## Struktur
 
@@ -10,8 +10,7 @@ Tugas Framework Laravel: tabel `genres`, `authors`, dan `books` dibuat dengan Mi
 | Seeder | `database/seeders/GenreSeeder.php`, `AuthorSeeder.php`, `BookSeeder.php` |
 | Model | `app/Models/Genre.php`, `Author.php`, `Book.php` |
 | Controller | `app/Http/Controllers/GenreController.php`, `AuthorController.php`, `BookController.php` |
-| View | `resources/views/genres.blade.php`, `authors.blade.php`, `books.blade.php` |
-| Routing | `routes/web.php` |
+| Routing | `routes/api.php` |
 
 ## Skema (mengikuti Brief BookSales)
 
@@ -19,20 +18,25 @@ Tugas Framework Laravel: tabel `genres`, `authors`, dan `books` dibuat dengan Mi
 - **authors**: `id`, `name`, `photo`, `bio`
 - **books**: `id`, `title`, `description`, `price`, `stock`, `cover_photo`, `genre_id` (FK → genres), `author_id` (FK → authors)
 
-Tabel `genres` dibuat karena `books.genre_id` adalah foreign key ke tabel tersebut.
-
-## Relasi
-
-- `Book belongsTo Author`, `Book belongsTo Genre`
-- `Author hasMany Book`, `Genre hasMany Book`
-
-## Route
+## Endpoint
 
 | Method | URI | Controller |
 |---|---|---|
-| GET | `/genres` | `GenreController@index` |
-| GET | `/authors` | `AuthorController@index` |
-| GET | `/books` | `BookController@index` |
+| GET | `/api/genres` | `GenreController@index` |
+| GET | `/api/authors` | `AuthorController@index` |
+| GET | `/api/books` | `BookController@index` |
+
+Semua endpoint mengembalikan JSON dengan format:
+
+```json
+{
+  "success": true,
+  "message": "Get All Resource",
+  "data": []
+}
+```
+
+`/api/books` menyertakan relasi `author` dan `genre` pada setiap item.
 
 ## Menjalankan
 
@@ -45,6 +49,10 @@ php artisan migrate:fresh --seed
 php artisan serve
 ```
 
-Buka http://127.0.0.1:8000/genres, `/authors`, dan `/books`.
+Lalu uji dengan Postman (method `GET`):
+
+- http://127.0.0.1:8000/api/genres
+- http://127.0.0.1:8000/api/authors
+- http://127.0.0.1:8000/api/books
 
 Laravel 12, PHP >= 8.2, database SQLite.

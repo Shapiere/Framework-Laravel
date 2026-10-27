@@ -33,18 +33,39 @@ class ExampleTest extends TestCase
         $this->assertSame(5, Book::count());
     }
 
-    public function test_relasi_book_ke_author_dan_genre(): void
+    public function test_api_genre_mengembalikan_json(): void
     {
-        $book = Book::with(['author', 'genre'])->first();
-
-        $this->assertNotNull($book->author);
-        $this->assertNotNull($book->genre);
+        $this->getJson('/api/genres')
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Get All Resource',
+            ])
+            ->assertJsonCount(5, 'data');
     }
 
-    public function test_halaman_genre_author_dan_book_menampilkan_data(): void
+    public function test_api_author_mengembalikan_json(): void
     {
-        $this->get('/genres')->assertStatus(200)->assertSee('Novel');
-        $this->get('/authors')->assertStatus(200)->assertSee('Pramoedya Ananta Toer');
-        $this->get('/books')->assertStatus(200)->assertSee('Bumi Manusia');
+        $this->getJson('/api/authors')
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Get All Resource',
+            ])
+            ->assertJsonCount(5, 'data');
+    }
+
+    public function test_api_book_mengembalikan_relasi_author_dan_genre(): void
+    {
+        $response = $this->getJson('/api/books')
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Get All Resource',
+            ])
+            ->assertJsonCount(5, 'data');
+
+        $this->assertNotNull($response->json('data.0.author'));
+        $this->assertNotNull($response->json('data.0.genre'));
     }
 }
