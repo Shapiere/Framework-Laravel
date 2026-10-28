@@ -68,4 +68,55 @@ class ExampleTest extends TestCase
         $this->assertNotNull($response->json('data.0.author'));
         $this->assertNotNull($response->json('data.0.genre'));
     }
+
+    public function test_create_genre_menyimpan_data(): void
+    {
+        $response = $this->postJson('/api/genres', [
+            'name' => 'Horor',
+            'description' => 'Cerita fiksi yang memicu rasa takut.',
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Resource created successfully',
+                'data' => ['name' => 'Horor'],
+            ]);
+
+        $this->assertSame(6, Genre::count());
+        $this->assertDatabaseHas('genres', ['name' => 'Horor']);
+    }
+
+    public function test_create_author_menyimpan_data(): void
+    {
+        $response = $this->postJson('/api/authors', [
+            'name' => 'Ayu Utami',
+            'photo' => 'ayu-utami.jpg',
+            'bio' => 'Penulis novel Saman.',
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Resource created successfully',
+                'data' => ['name' => 'Ayu Utami'],
+            ]);
+
+        $this->assertSame(6, Author::count());
+        $this->assertDatabaseHas('authors', ['name' => 'Ayu Utami']);
+    }
+
+    public function test_create_genre_tanpa_data_ditolak(): void
+    {
+        $this->postJson('/api/genres', [])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['name', 'description']);
+    }
+
+    public function test_create_author_tanpa_data_ditolak(): void
+    {
+        $this->postJson('/api/authors', [])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['name', 'photo', 'bio']);
+    }
 }

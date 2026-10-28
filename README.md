@@ -20,11 +20,13 @@ Tugas Framework Laravel: data `genres`, `authors`, dan `books` dibuat lewat Migr
 
 ## Endpoint
 
-| Method | URI | Controller |
-|---|---|---|
-| GET | `/api/genres` | `GenreController@index` |
-| GET | `/api/authors` | `AuthorController@index` |
-| GET | `/api/books` | `BookController@index` |
+| Method | URI | Controller | Keterangan |
+|---|---|---|---|
+| GET | `/api/genres` | `GenreController@index` | Read all genre |
+| POST | `/api/genres` | `GenreController@store` | Create genre |
+| GET | `/api/authors` | `AuthorController@index` | Read all author |
+| POST | `/api/authors` | `AuthorController@store` | Create author |
+| GET | `/api/books` | `BookController@index` | Read all book |
 
 Semua endpoint mengembalikan JSON dengan format:
 
@@ -35,6 +37,20 @@ Semua endpoint mengembalikan JSON dengan format:
   "data": []
 }
 ```
+
+Create mengembalikan status **201 Created** dengan format yang sama dan `message` bernilai `Resource created successfully`.
+
+Body untuk create:
+
+```json
+// POST /api/genres
+{ "name": "Horor", "description": "Cerita fiksi yang memicu rasa takut." }
+
+// POST /api/authors
+{ "name": "Ayu Utami", "photo": "ayu-utami.jpg", "bio": "Penulis novel Saman." }
+```
+
+Data tidak lengkap ditolak dengan status **422** beserta daftar field yang gagal validasi.
 
 `/api/books` menyertakan relasi `author` dan `genre` pada setiap item.
 
