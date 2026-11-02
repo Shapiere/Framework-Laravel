@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\GenreController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 // Login untuk memperoleh token (dipakai saat testing di Postman).
@@ -20,3 +21,13 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 });
 
 Route::apiResource('books', BookController::class)->only(['index']);
+
+// Transaksi: Create, Update, Show untuk customer terautentikasi.
+Route::middleware(['auth:sanctum', 'role:customer'])->group(function () {
+    Route::apiResource('transactions', TransactionController::class)->only(['store', 'update', 'show']);
+});
+
+// Transaksi: Read All dan Destroy hanya untuk admin.
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::apiResource('transactions', TransactionController::class)->only(['index', 'destroy']);
+});
